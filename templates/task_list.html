@@ -1,0 +1,112 @@
+{% extends "base1.html" %} {% block content %}
+
+<div class="todo-container" id="todo-container">
+  <div class="todo-search">
+    <form
+      hx-post="{% url 'create-task' %}"
+      hx-trigger="submit"
+      hx-target="#todo-container"
+      hx-swap="outerHTML"
+    >
+      {% csrf_token %}
+      <input id="input" placeholder="Enter Todo" name="title" required />
+      <button>Add</button>
+    </form>
+  </div>
+
+  <div class="todo-list" id="todo-list">
+    {% for task in tasks %}  
+    {% if task.completed == True %}
+
+
+    <div class="todo-list-item">
+        <div class="task">
+          <input
+            type="checkbox"
+            name="checkbox"
+            checked
+            value="{{ task.status }}"
+            hx-post="{% url 'update-task-status' task.id %}"
+            hx-trigger="click"
+            hx-target="#todo-container"
+            hx-swap="outerHTML"
+          />
+          <p style="text-decoration: line-through">{{task.title}}</p>
+        </div>
+  
+        <div class="btn-container">
+          <div
+            class="edit"
+          >
+            <i class="fa-solid fa-pen-to-squar"></i>
+          </div>
+  
+          <div
+            class="del"
+            
+            hx-delete="{% url 'delete-task' task.id %}"
+            hx-trigger="click"
+            hx-target="#todo-container"
+            hx-swap="outerHTML"
+          >
+            <i class="fa-solid fa-trash-can"></i>
+          </div>
+        </div>
+      </div>
+
+
+      {% else %}
+
+      <div class="todo-list-item">
+        <div class="task">
+          <input
+            type="checkbox"
+            value="{{ task.status }}"
+            name="checkbox"
+            hx-post="{% url 'update-task-status' task.id %}"
+            hx-trigger="click"
+            hx-target="#todo-container"
+            hx-swap="outerHTML"
+            {% if task.status %}checked
+            {% else %} unchecked
+            {% endif %}
+
+          />
+          <p>{{task.title}}</p>
+        </div>
+  
+        <div class="btn-container">
+          <div
+            class="edit"
+            hx-get="{% url 'append-task' task.id %}"
+            hx-trigger="click"
+            hx-target="#input"
+            hx-swap="outerHTML"
+          >
+            <i class="fa-solid fa-pen-to-square"></i>
+          </div>
+  
+          <div
+            class="del"
+            hx-confirm="Are you sure you want to delete"
+            hx-delete="{% url 'delete-task' task.id %}"
+            hx-trigger="click"
+            hx-target="#todo-container"
+            hx-swap="outerHTML"
+          >
+            <i class="fa-solid fa-trash-can"></i>
+          </div>
+        </div>
+      </div>
+
+
+        
+    {% endif %}
+        
+
+ 
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock content %}
